@@ -7,14 +7,17 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { handleZodValidationError } from "@/lib/validationError";
 
+interface RouteContext {
+    params: Promise<{ id: string }>;
+}
 
 
 export async function GET(
     request: NextRequest,
-    context: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
-        const { id } = context.params
+        const { id } = await context.params
 
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
@@ -37,10 +40,10 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    context: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
-        const { id } = context.params
+        const { id } = await context.params
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
@@ -70,7 +73,7 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    context: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
         const { id } = await context.params

@@ -1,5 +1,5 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
-import { PUT, DELETE } from './route';
+import { GET, PUT, DELETE } from './route';
 import prisma from '@/lib/prisma';
 import { getServerSession, Session } from 'next-auth';
 import { NextRequest } from 'next/server';
@@ -25,6 +25,10 @@ const mockedPrismaAddressDelete = prisma.address.delete as jest.MockedFunction<t
 
 
 describe('/api/addresses/[id]', () => {
+
+    const createMockContext = (id: string) => ({
+        params: Promise.resolve({ id })
+    });
 
     const mockSession: Session = {
         user: {
@@ -62,61 +66,57 @@ describe('/api/addresses/[id]', () => {
         jest.clearAllMocks();
     });
 
-    // describe('GET', () => {
-    //     it('deve obter o endereço com sucesso', async () => {
-    //         mockedGetServerSession.mockResolvedValue(mockSession);
-    //         mockedPrismaAddressFindUnique.mockResolvedValue(mockAddress);
-    //         const context = { params: { id: 'addr-abc' } };
+    describe('GET', () => {
+        it('deve obter o endereço com sucesso', async () => {
+            mockedGetServerSession.mockResolvedValue(mockSession);
+            mockedPrismaAddressFindUnique.mockResolvedValue(mockAddress);
 
-    //         const request = {} as NextRequest
+            const request = {} as NextRequest
 
-    //         const response = await GET(request, context);
-    //         const body = await response.json();
+            const response = await GET(request, createMockContext('addr-abc'));
+            const body = await response.json();
 
-    //         expect(response.status).toBe(200);
-    //         expect(body).toEqual(mockAddress);
-    //         expect(mockedPrismaAddressFindUnique).toHaveBeenCalledWith({
-    //             where: { id: 'addr-abc' }
-    //         });
-    //     });
-    //     it('deve retornar 401 se o utilizador não estiver logado', async () => {
-    //         mockedGetServerSession.mockResolvedValue(null);
-    //         const context = { params: { id: 'addr-abc' } };
+            expect(response.status).toBe(200);
+            expect(body).toEqual(mockAddress);
+            expect(mockedPrismaAddressFindUnique).toHaveBeenCalledWith({
+                where: { id: 'addr-abc' }
+            });
+        });
+        it('deve retornar 401 se o utilizador não estiver logado', async () => {
+            mockedGetServerSession.mockResolvedValue(null);
 
-    //         const request = {} as NextRequest
+            const request = {} as NextRequest
 
-    //         const response = await GET(request, context);
+            const response = await GET(request, createMockContext('addr-abc'));
 
-    //         expect(response.status).toBe(401);
-    //     });
-    //     it('deve retornar 403 quando usuário não admin tenta acessar endereço de outro usuário', async () => {
-    //         const nonAdminSession = {
-    //             ...mockSession,
-    //             user: { ...mockSession.user, admin: false, id: 'user-123' }
-    //         };
+            expect(response.status).toBe(401);
+        });
+        it('deve retornar 403 quando usuário não admin tenta acessar endereço de outro usuário', async () => {
+            const nonAdminSession = {
+                ...mockSession,
+                user: { ...mockSession.user, admin: false, id: 'user-123' }
+            };
 
-    //         mockedGetServerSession.mockResolvedValue(nonAdminSession);
-    //         mockedPrismaAddressFindUnique.mockResolvedValue(mockOtherUserAddress);
+            mockedGetServerSession.mockResolvedValue(nonAdminSession);
+            mockedPrismaAddressFindUnique.mockResolvedValue(mockOtherUserAddress);
 
-    //         const context = { params: { id: 'addr-xyz' } };
-    //         const request = {} as NextRequest
+            const request = {} as NextRequest
 
-    //         const response = await GET(request, context);
+            const response = await GET(request, createMockContext('addr-xyz'));
 
-    //         expect(response.status).toBe(403);
-    //     });
-    //     it('deve retornar 404 quando endereço não encontrado', async () => {
-    //         mockedGetServerSession.mockResolvedValue(mockSession);
-    //         mockedPrismaAddressFindUnique.mockResolvedValue(null);
+            expect(response.status).toBe(403);
+        });
+        it('deve retornar 404 quando endereço não encontrado', async () => {
+            mockedGetServerSession.mockResolvedValue(mockSession);
+            mockedPrismaAddressFindUnique.mockResolvedValue(null);
 
-    //         const context = { params: { id: 'addr-inexistente' } };
-    //         const request = {} as NextRequest
+            const request = {} as NextRequest
 
-    //         const response = await GET(request, context);
+            const response = await GET(request, createMockContext('addr-inexistente'));
 
-    //         expect(response.status).toBe(404);
-    //     });
-    // });
+            expect(response.status).toBe(404);
+        });
+    });
 
     describe('PUT', () => {
         it('deve atualizar o endereço com sucesso', async () => {
@@ -129,9 +129,9 @@ describe('/api/addresses/[id]', () => {
                     method: 'PUT',
                     body: JSON.stringify(updateData)
                 });
-            const context = { params: { id: 'addr-abc' } };
 
-            const response = await PUT(request, context);
+
+            const response = await PUT(request, createMockContext('addr-abc'));
 
             expect(response.status).toBe(200);
             expect(mockedPrismaAddressUpdate).toHaveBeenCalledWith({
@@ -142,17 +142,16 @@ describe('/api/addresses/[id]', () => {
         it('deve retornar 401 se o utilizador não estiver logado', async () => {
             mockedGetServerSession.mockResolvedValue(null);
             const request = new NextRequest('http://localhost/api/addresses/addr-abc', { method: 'PUT', body: '{}' });
-            const context = { params: { id: 'addr-abc' } };
-            const response = await PUT(request, context);
+
+            const response = await PUT(request, createMockContext('addr-abc'));
             expect(response.status).toBe(401);
         });
         it('deve retornar 403 se o endereço pertencer a outro utilizador', async () => {
             mockedGetServerSession.mockResolvedValue(mockSession);
-            mockedPrismaAddressFindUnique.mockResolvedValue(mockOtherUserAddress); // Endereço de outro user
+            mockedPrismaAddressFindUnique.mockResolvedValue(mockOtherUserAddress);
             const request = new NextRequest('http://localhost/api/addresses/addr-xyz', { method: 'PUT', body: '{}' });
-            const context = { params: { id: 'addr-xyz' } };
 
-            const response = await PUT(request, context);
+            const response = await PUT(request, createMockContext('addr-xyz'));
 
             expect(response.status).toBe(403);
         });
@@ -160,9 +159,8 @@ describe('/api/addresses/[id]', () => {
             mockedGetServerSession.mockResolvedValue(mockSession);
             mockedPrismaAddressFindUnique.mockResolvedValue(null);
             const request = new NextRequest('http://localhost/api/addresses/non-existent-id', { method: 'PUT', body: '{}' });
-            const context = { params: { id: 'non-existent-id' } };
 
-            const response = await PUT(request, context);
+            const response = await PUT(request, createMockContext('non-existent-id'));
 
             expect(response.status).toBe(404);
         });
@@ -173,10 +171,9 @@ describe('/api/addresses/[id]', () => {
             mockedGetServerSession.mockResolvedValue(mockSession);
             mockedPrismaAddressFindUnique.mockResolvedValue(mockAddress);
 
-            const context = { params: { id: 'addr-1' } };
             const request = {} as NextRequest
 
-            const response = await DELETE(request, context);
+            const response = await DELETE(request, createMockContext('addr-1'));
             const body = await response.json();
 
             expect(response.status).toBe(200);
@@ -185,31 +182,28 @@ describe('/api/addresses/[id]', () => {
         });
         it('deve retornar 401 se o utilizador não estiver logado', async () => {
             mockedGetServerSession.mockResolvedValue(null);
-            const context = { params: { id: 'addr-abc' } };
             const request = {} as NextRequest
 
-            const response = await DELETE(request, context);
+            const response = await DELETE(request, createMockContext('addr-abc'));
             expect(response.status).toBe(401);
         });
         it('deve retornar 403 se o endereço pertencer a outro utilizador', async () => {
             mockedGetServerSession.mockResolvedValue(mockSession);
             mockedPrismaAddressFindUnique.mockResolvedValue(mockOtherUserAddress);
-            const context = { params: { id: 'addr-xyz' } };
 
             const request = {} as NextRequest
 
-            const response = await DELETE(request, context);
+            const response = await DELETE(request, createMockContext('addr-xyz'));
 
             expect(response.status).toBe(403);
         });
         it('deve retornar 404 se o endereço não for encontrado', async () => {
             mockedGetServerSession.mockResolvedValue(mockSession);
             mockedPrismaAddressFindUnique.mockResolvedValue(null);
-            const context = { params: { id: 'non-existent-id' } };
 
             const request = {} as NextRequest
 
-            const response = await DELETE(request, context);
+            const response = await DELETE(request, createMockContext('non-existent-id'));
 
             expect(response.status).toBe(404);
         });
