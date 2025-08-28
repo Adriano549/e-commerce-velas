@@ -134,7 +134,7 @@ Como este é um projeto em desenvolvimento, aqui estão algumas funcionalidades 
 ## Contato
 
 **[Seu Nome]**
-- **LinkedIn:** [https://linkedin.com/in/SEU_USUARIO_LINKEDIN](https://www.linkedin.com/in/adriano-almeida-510a0a309/)
+- **LinkedIn:** [https://linkedin.com](https://www.linkedin.com/in/adriano-almeida-510a0a309/)
 - **GitHub:** [https://github.com/Adriano549](https://github.com/Adriano549)
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
