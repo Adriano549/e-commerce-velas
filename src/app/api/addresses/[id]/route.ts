@@ -13,16 +13,16 @@ interface Params {
 
 export async function GET(
     request: NextRequest,
-    context: { params: { id: string } }
+    { params }: { params: { id: string } }
 ) {
     try {
-        const { params } = await context
+        const { id } = await params
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
         }
 
-        const verification = await verifyAddressOwner(session.user.id, params.id);
+        const verification = await verifyAddressOwner(session.user.id, id);
         if (verification.error) {
             return NextResponse.json({ message: verification.error }, { status: verification.status });
         }
