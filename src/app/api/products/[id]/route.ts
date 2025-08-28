@@ -6,15 +6,14 @@ import { updateProductSchema } from '@/lib/schemas/ProductValidation';
 import { verifyAdminSession } from '@/lib/session';
 import { handleZodValidationError } from '@/lib/validationError';
 
-interface Params {
-    params: {
-        id: string;
-    };
+
+interface RouteContext {
+    params: Promise<{ id: string }>;
 }
 
 export async function GET(
     request: NextRequest,
-    context: { params: { id: string } }) {
+    context: RouteContext) {
     try {
         const { id } = await context.params;
         console.log(id, 'teste id');
@@ -37,9 +36,9 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    { params }: Params
+    context: RouteContext
 ) {
-    const { id } = await params;
+    const { id } = await context.params;
     try {
         const adminCheck = await verifyAdminSession();
         if (!adminCheck.authorized) {
@@ -68,13 +67,11 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    context: { params: Promise<{ id: string }> }
+    context: RouteContext
 ) {
 
     try {
-        const params = await context.params;
-        const { id } = params
-        console.log(id);
+        const { id } = await context.params;
 
         const adminCheck = await verifyAdminSession();
         if (!adminCheck.authorized) {

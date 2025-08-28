@@ -24,7 +24,9 @@ const mockedPrismaProductFindUnique = prisma.product.findUnique as jest.MockedFu
 const mockedGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>;
 const mockedPrismaProductUpdate = prisma.product.update as jest.MockedFunction<typeof prisma.product.update>;
 const mockedPrismaProductDelete = prisma.product.delete as jest.MockedFunction<typeof prisma.product.delete>;
-
+const createMockContext = (id: string) => ({
+    params: Promise.resolve({ id })
+});
 describe('GET /api/products/[id]', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -52,9 +54,8 @@ describe('GET /api/products/[id]', () => {
             createdAt: expect.any(String),
             updatedAt: expect.any(String)
         }
-        const params = { params: { id: 'valid-id-123' } };
         const request = {} as NextRequest
-        const response = await GET(request, params);
+        const response = await GET(request, createMockContext('valid-id-123'));
         const body = await response.json();
 
         expect(response.status).toBe(200);
@@ -64,10 +65,9 @@ describe('GET /api/products/[id]', () => {
 
     it('deve retornar um erro 404 se o produto não for encontrado', async () => {
         mockedPrismaProductFindUnique.mockResolvedValue(null);
-        const params = { params: { id: 'invalid-id' } };
         const request = {} as NextRequest
 
-        const response = await GET(request, params);
+        const response = await GET(request, createMockContext('invalid-id'));
         const body = await response.json();
 
         expect(response.status).toBe(404);
@@ -76,10 +76,9 @@ describe('GET /api/products/[id]', () => {
 
     it('deve retornar um erro 500 se ocorrer um problema no banco de dados', async () => {
         mockedPrismaProductFindUnique.mockRejectedValue(new Error('Erro no banco'));
-        const params = { params: { id: 'any-id' } };
         const request = {} as NextRequest
 
-        const response = await GET(request, params);
+        const response = await GET(request, createMockContext('any-id'));
         const body = await response.json();
 
         expect(response.status).toBe(500);
@@ -121,10 +120,9 @@ describe('PUT /api/products/[id]', () => {
             method: 'PUT',
             body: JSON.stringify(updateData),
         });
-        const params = { params: { id: 'prod-123' } };
 
         // ACT
-        const response = await PUT(request, params);
+        const response = await PUT(request, createMockContext('prod-123'));
         const body = await response.json();
 
         // ASSERT
@@ -152,10 +150,9 @@ describe('PUT /api/products/[id]', () => {
             method: 'PUT',
             body: JSON.stringify(updateData),
         });
-        const params = { params: { id: 'prod-123' } };
 
         // ACT
-        const response = await PUT(request, params);
+        const response = await PUT(request, createMockContext('prod-123'));
 
         expect(response.status).toBe(403);
     });
@@ -167,9 +164,8 @@ describe('PUT /api/products/[id]', () => {
             method: 'PUT',
             body: JSON.stringify(updateData),
         });
-        const params = { params: { id: 'id-nao-existe' } };
 
-        const response = await PUT(request, params);
+        const response = await PUT(request, createMockContext('id-nao-existe'));
 
         expect(response.status).toBe(404);
     });
@@ -189,9 +185,8 @@ describe('PUT /api/products/[id]', () => {
             method: 'PUT',
             body: JSON.stringify(invalidData),
         });
-        const params = { params: { id: 'prod-123' } };
 
-        const response = await PUT(request, params);
+        const response = await PUT(request, createMockContext('prod-123'));
         const responseBody = await response.json();
 
         expect(response.status).toBe(400);
