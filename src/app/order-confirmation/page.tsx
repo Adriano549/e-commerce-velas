@@ -8,9 +8,9 @@ import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 
 interface OrderConfirmationPageProps {
-    searchParams: {
+    searchParams: Promise<{
         orderId?: string;
-    };
+    }>;
 }
 
 export default async function OrderConfirmationPage({ searchParams }: OrderConfirmationPageProps) {
@@ -23,7 +23,6 @@ export default async function OrderConfirmationPage({ searchParams }: OrderConfi
     if (!orderId) {
         notFound();
     }
-
 
     const order = await prisma.order.findUnique({
         where: {
