@@ -42,8 +42,12 @@ export async function GET(params: Params) {
     }
 }
 
-export async function PUT(request: NextRequest, params: Params) {
+export async function PUT(
+    request: NextRequest,
+    context: { params: { id: string } }
+) {
     try {
+        const params = await context.params;
         const session = await getServerSession(authOptions);
 
         if (!session?.user?.id) {

@@ -22,7 +22,7 @@ export default function HeroSection() {
                     Descubra nossa coleção exclusiva de velas aromáticas feitas à mão, perfeitas para transformar qualquer ambiente.
                 </p>
                 <Button asChild size="lg" className="mt-8">
-                    <Link href="/velas">Conheça nossa coleção</Link>
+                    <Link href="/shop">Conheça nossa coleção</Link>
                 </Button>
             </div>
         </section>

@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ProductFromDb } from "@/types/cardItem";
 import AddToCartButton from "./AddToCartButton";
+import PlaceholderImage from '@/assets/placeholder-image.png';
 
 interface ProductCardProps {
     product: ProductFromDb;
@@ -22,7 +23,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <CardHeader>
                 <div className="relative h-60 w-full overflow-hidden rounded-md">
                     <Image
-                        src={product.image}
+                        src={product.image || PlaceholderImage}
                         alt={product.name}
                         fill
                         className="object-cover"

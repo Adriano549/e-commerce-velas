@@ -24,7 +24,7 @@ export default async function VelasPage({
                 </p>
             </div>
             <div className="mb-8 max-w-lg mx-auto">
-                <ProductSearch />
+                <ProductSearch basePath="/shop" />
             </div>
 
             {products.length === 0 ? (

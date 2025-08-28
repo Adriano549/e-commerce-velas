@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, } from "@/components/ui/card";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
+import PlaceholderImage from '@/assets/placeholder-image.png';
 
 type DetailedCartItem = {
     product: ProductFromDb;
@@ -23,7 +24,11 @@ export function CartItem({ item, onUpdateQuantity, onRemoveItem }: CartItemProps
             <div className="flex items-center gap-4">
                 <div className="relative h-20 w-20 flex-shrink-0">
                     <Image
-                        src={item.product.image}
+                        src={item.product.image || PlaceholderImage.src}
+                        onError={(e) => {
+                            (e.target as HTMLImageElement).src = PlaceholderImage.src;
+                            (e.target as HTMLImageElement).onerror = null;
+                        }}
                         alt={item.product.name}
                         fill
                         className="object-cover rounded-md"

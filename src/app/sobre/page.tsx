@@ -28,7 +28,9 @@ export default function SobrePage() {
         { name: "Shadcn/UI", role: "Componentes de UI Reutilizáveis" },
         { name: "Zod", role: "Validação de Schemas" },
         { name: "Jest", role: "Testes Automatizados da API" },
-        { name: "Canva AI", role: "Criação de Vídeos e Imagens" }
+        { name: "Canva AI", role: "Criação de Vídeos e Imagens" },
+        { name: "JavaScript", role: "Linguagem de Programação" },
+        { name: "Node.js", role: "Execução do Back-end" },
     ];
 
     return (
@@ -44,7 +46,7 @@ export default function SobrePage() {
 
                 <section>
                     <h2 className="text-3xl font-bold text-center mb-8">Tecnologias Utilizadas</h2>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                         {techStack.map((tech) => (
                             <Card key={tech.name}>
                                 <CardHeader>

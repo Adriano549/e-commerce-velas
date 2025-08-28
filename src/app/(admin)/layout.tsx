@@ -9,7 +9,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-        redirect('/login?callbackUrl=/dashboard/products');
+        redirect('/login');
     }
 
     if (!session.user.admin) {

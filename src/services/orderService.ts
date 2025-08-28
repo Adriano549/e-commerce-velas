@@ -57,3 +57,16 @@ export async function getOrdersByUser() {
 
     return orders;
 }
+
+export async function getAdminOrders() {
+    try {
+        const orders = await prisma.order.findMany({
+            include: { user: { select: { name: true, email: true } } },
+            orderBy: { createdAt: 'desc' },
+        });
+        return orders;
+    } catch (error) {
+        console.error("Falha ao buscar pedidos de admin:", error);
+        return [];
+    }
+}

@@ -13,7 +13,7 @@ export default async function ProfilePage() {
     }
 
     if (session.user.admin) {
-        redirect('/dashboard/products');
+        redirect('/dashboard/');
     }
     const [initialAddresses, orders] = await Promise.all([
         getAddressesByUserId(session.user.id),

@@ -4,40 +4,30 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ProductFromDb } from '@/types/cardItem';
 import { Button } from '@/components/ui/button';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow
-} from "@/components/ui/table";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Image from 'next/image';
 import ProductActions from './ProductActions';
 import ProductForm from './ProductForm';
 import ProductSearch from '../shared/ProductSearch';
 import PaginationControls from '../shared/PaginationControls';
+import PlaceholderImage from '@/assets/placeholder-image.png';
 
-interface ProductDashboardClientProps {
+interface ProductsPanelProps {
     initialProducts: ProductFromDb[];
     totalPages: number;
     currentPage: number;
 }
 
-export default function ProductDashboardClient({
+export default function ProductsPanel({
     initialProducts,
     totalPages,
     currentPage,
-}: ProductDashboardClientProps) {
+}: ProductsPanelProps) {
     const router = useRouter();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<ProductFromDb | null>(null);
+
 
     const handleOpenCreate = () => {
         setEditingProduct(null);
@@ -49,20 +39,22 @@ export default function ProductDashboardClient({
         setIsDialogOpen(true);
     };
 
-    const handleSuccess = () => {
+    const handleDeleteSuccess = () => {
+        router.refresh();
+    }
+
+    const handleFormSuccess = () => {
         setIsDialogOpen(false);
         router.refresh();
     };
 
     return (
-        <div className="container mx-auto py-10">
-            <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold">Gerir Produtos</h1>
+        <div className="py-4">
+            <div className='flex justify-between items-center'>
+                <div className="mb-8 max-w-sm">
+                    <ProductSearch basePath="/dashboard/" />
+                </div>
                 <Button onClick={handleOpenCreate}>Adicionar Novo Produto</Button>
-            </div>
-
-            <div className="mb-8 max-w-sm">
-                <ProductSearch />
             </div>
 
             <div className="rounded-md border">
@@ -80,15 +72,25 @@ export default function ProductDashboardClient({
                         {initialProducts.map((product) => (
                             <TableRow key={product.id}>
                                 <TableCell className="hidden sm:table-cell">
-                                    <Image alt={product.name} className="aspect-square rounded-md object-cover" height="64" src={product.image} width="64" />
+                                    <Image
+                                        alt={product.name}
+                                        className="aspect-square rounded-md object-cover"
+                                        height="64"
+                                        src={product.image || PlaceholderImage.src}
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).src = PlaceholderImage.src;
+                                            (e.target as HTMLImageElement).onerror = null;
+                                        }}
+                                        width="64" />
                                 </TableCell>
                                 <TableCell className="font-medium">{product.name}</TableCell>
-                                <TableCell>{Number(product.price)}</TableCell>
+                                <TableCell>{Number(product.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</TableCell>
                                 <TableCell>{product.stock}</TableCell>
                                 <TableCell>
                                     <ProductActions
                                         productId={product.id}
                                         onEdit={() => handleOpenEdit(product)}
+                                        onDelete={handleDeleteSuccess}
                                     />
                                 </TableCell>
                             </TableRow>
@@ -96,11 +98,12 @@ export default function ProductDashboardClient({
                     </TableBody>
                 </Table>
             </div>
+
             <div className="mt-8 flex justify-center">
                 <PaginationControls
                     currentPage={currentPage}
                     totalPages={totalPages}
-                    basePath="/dashboard/products"
+                    basePath="/dashboard"
                 />
             </div>
 
@@ -111,7 +114,7 @@ export default function ProductDashboardClient({
                     </DialogHeader>
                     <ProductForm
                         initialData={editingProduct}
-                        onSuccess={handleSuccess}
+                        onSuccess={handleFormSuccess}
                     />
                 </DialogContent>
             </Dialog>

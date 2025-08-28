@@ -2,30 +2,43 @@
 
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function ProductSearch() {
+// Adicionamos uma prop opcional 'basePath'
+interface ProductSearchProps {
+    basePath?: string;
+}
+
+export default function ProductSearch({ basePath }: ProductSearchProps) {
     const router = useRouter();
+    const pathname = usePathname(); // Hook para obter o caminho atual
     const searchParams = useSearchParams();
     const currentSearch = searchParams.get('q') || '';
 
     const [query, setQuery] = useState(currentSearch);
 
+    const targetPath = basePath || pathname;
+
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
             if (query !== currentSearch) {
+                const params = new URLSearchParams(searchParams.toString());
                 if (query) {
-                    router.push(`/shop?q=${query}`);
+                    params.set('q', query);
                 } else {
-                    router.push('/shop');
+                    params.delete('q');
                 }
+                // Reset para a primeira página ao fazer uma nova busca
+                params.delete('page');
+
+                router.push(`${targetPath}?${params.toString()}`);
             }
         }, 500);
 
         return () => clearTimeout(debounceTimer);
 
-    }, [query, currentSearch, router]);
+    }, [query, currentSearch, router, searchParams, targetPath]);
 
     return (
         <div className="relative">

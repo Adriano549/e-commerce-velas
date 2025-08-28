@@ -21,27 +21,18 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { MoreHorizontal } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
+
 
 interface ProductActionsProps {
     productId: string;
     onEdit: () => void;
-}
-
-interface ProductActionsProps {
-    productId: string;
-    onEdit: () => void;
-    onDelete?: () => void; // ✅ Callback opcional para quando produto for deletado
+    onDelete: (productId: string) => void;
 }
 
 export default function ProductActions({ productId, onEdit, onDelete }: ProductActionsProps) {
-    const router = useRouter();
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
-
-    const handleDeleteClick = () => {
-        setShowDeleteDialog(true);
-    };
 
     const handleDelete = async () => {
         setIsDeleting(true);
@@ -55,19 +46,18 @@ export default function ProductActions({ productId, onEdit, onDelete }: ProductA
                 throw new Error(error.message || 'Falha ao deletar produto');
             }
 
-            setShowDeleteDialog(false);
-            onDelete?.(); // ✅ Chama callback se fornecido
-            router.refresh();
+            toast.success("Produto apagado com sucesso!");
+            onDelete(productId);
         } catch (error) {
             console.error("Falha ao apagar o produto", error);
-            alert(`Erro: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+            toast.error(error instanceof Error ? error.message : 'Erro desconhecido');
         } finally {
             setIsDeleting(false);
         }
     };
 
     return (
-        <>
+        <AlertDialog>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0">
@@ -80,37 +70,36 @@ export default function ProductActions({ productId, onEdit, onDelete }: ProductA
                         Editar
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                        onClick={handleDeleteClick}
-                        className="text-red-600 focus:text-red-600"
-                    >
-                        Apagar
-                    </DropdownMenuItem>
+                    <AlertDialogTrigger asChild>
+                        <DropdownMenuItem
+                            onSelect={(e) => e.preventDefault()} // Impede o fecho do menu
+                            className="text-red-600 focus:text-red-600"
+                        >
+                            Apagar
+                        </DropdownMenuItem>
+                    </AlertDialogTrigger>
                 </DropdownMenuContent>
             </DropdownMenu>
-
-            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Você tem a certeza absoluta?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Esta ação não pode ser desfeita e irá apagar permanentemente o produto.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isDeleting}>
-                            Cancelar
-                        </AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleDelete}
-                            disabled={isDeleting}
-                            className="bg-destructive hover:bg-destructive/90"
-                        >
-                            {isDeleting ? "Apagando..." : "Continuar"}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Você tem a certeza absoluta?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Esta ação não pode ser desfeita e irá apagar permanentemente o produto.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isDeleting}>
+                        Cancelar
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className="bg-destructive hover:bg-destructive/90"
+                    >
+                        {isDeleting ? "A apagar..." : "Continuar"}
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     );
 }
