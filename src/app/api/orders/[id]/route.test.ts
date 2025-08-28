@@ -104,7 +104,7 @@ describe('/api/orders/[id]', () => {
             const request = new NextRequest('http://localhost/api/orders/order-abc', { method: 'PUT', body: JSON.stringify({ status: 'ENVIADO' }) });
             const context = { params: { id: 'order-abc' } };
 
-            const response = await PUT(request, context.params);
+            const response = await PUT(request, context);
             expect(response.status).toBe(200);
             expect(mockedPrismaOrderUpdate).toHaveBeenCalledWith({
                 where: { id: 'order-abc' },
@@ -116,7 +116,7 @@ describe('/api/orders/[id]', () => {
             mockedGetServerSession.mockResolvedValue(userSession);
             const request = new NextRequest('http://localhost/api/orders/order-abc', { method: 'PUT', body: '{}' });
             const context = { params: { id: 'order-abc' } };
-            const response = await PUT(request, context.params);
+            const response = await PUT(request, context);
             expect(response.status).toBe(403);
         });
 
@@ -124,7 +124,7 @@ describe('/api/orders/[id]', () => {
             mockedGetServerSession.mockResolvedValue(null);
             const request = new NextRequest('http://localhost/api/orders/order-abc', { method: 'PUT', body: '{}' });
             const context = { params: { id: 'order-abc' } };
-            const response = await PUT(request, context.params);
+            const response = await PUT(request, context);
             expect(response.status).toBe(401);
         });
     });

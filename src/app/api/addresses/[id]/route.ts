@@ -17,6 +17,7 @@ export async function GET(
 ) {
     try {
         const { id } = await context.params
+
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
@@ -26,21 +27,28 @@ export async function GET(
         if (verification.error) {
             return NextResponse.json({ message: verification.error }, { status: verification.status });
         }
+        const address = await prisma.address.findUnique({
+            where: { id },
+        });
 
-        return NextResponse.json(verification.address, { status: 200 });
+        return NextResponse.json(address, { status: 200 });
     } catch (error) {
         return errorHandler(error, `[ADDRESSES_GET_BY_ID]`);
     }
 }
 
-export async function PUT(request: NextRequest, params: Params) {
+export async function PUT(
+    request: NextRequest,
+    context: { params: { id: string } }
+) {
     try {
+        const { id } = await context.params
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
         }
 
-        const verification = await verifyAddressOwner(session.user.id, params.id);
+        const verification = await verifyAddressOwner(session.user.id, id);
         if (verification.error) {
             return NextResponse.json({ message: verification.error }, { status: verification.status });
         }
@@ -52,7 +60,7 @@ export async function PUT(request: NextRequest, params: Params) {
         }
 
         const updatedAddress = await prisma.address.update({
-            where: { id: params.id },
+            where: { id },
             data: validation.data,
         });
 

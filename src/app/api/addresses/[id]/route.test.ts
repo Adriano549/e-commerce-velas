@@ -124,14 +124,14 @@ describe('/api/addresses/[id]', () => {
             mockedPrismaAddressFindUnique.mockResolvedValue(mockAddress);
             mockedPrismaAddressUpdate.mockResolvedValue({ ...mockAddress, number: '999' });
             const updateData = { number: '999' };
-            const request = new NextRequest('http://localhost/api/addresses/addr-1',
+            const request = new NextRequest('http://localhost/api/addresses/addr-abc',
                 {
                     method: 'PUT',
                     body: JSON.stringify(updateData)
                 });
             const context = { params: { id: 'addr-abc' } };
 
-            const response = await PUT(request, context.params);
+            const response = await PUT(request, context);
 
             expect(response.status).toBe(200);
             expect(mockedPrismaAddressUpdate).toHaveBeenCalledWith({
@@ -143,7 +143,7 @@ describe('/api/addresses/[id]', () => {
             mockedGetServerSession.mockResolvedValue(null);
             const request = new NextRequest('http://localhost/api/addresses/addr-abc', { method: 'PUT', body: '{}' });
             const context = { params: { id: 'addr-abc' } };
-            const response = await PUT(request, context.params);
+            const response = await PUT(request, context);
             expect(response.status).toBe(401);
         });
         it('deve retornar 403 se o endereço pertencer a outro utilizador', async () => {
@@ -152,7 +152,7 @@ describe('/api/addresses/[id]', () => {
             const request = new NextRequest('http://localhost/api/addresses/addr-xyz', { method: 'PUT', body: '{}' });
             const context = { params: { id: 'addr-xyz' } };
 
-            const response = await PUT(request, context.params);
+            const response = await PUT(request, context);
 
             expect(response.status).toBe(403);
         });
@@ -162,7 +162,7 @@ describe('/api/addresses/[id]', () => {
             const request = new NextRequest('http://localhost/api/addresses/non-existent-id', { method: 'PUT', body: '{}' });
             const context = { params: { id: 'non-existent-id' } };
 
-            const response = await PUT(request, context.params);
+            const response = await PUT(request, context);
 
             expect(response.status).toBe(404);
         });
