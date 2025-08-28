@@ -7,35 +7,33 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { handleZodValidationError } from "@/lib/validationError";
 
-interface Params {
-    id: string;
-}
 
-export async function GET(
-    request: NextRequest,
-    context: { params: { id: string } }
-) {
-    try {
-        const { id } = await context.params
 
-        const session = await getServerSession(authOptions);
-        if (!session?.user?.id) {
-            return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
-        }
+// export async function GET(
+//     request: NextRequest,
+//     context: { params: { id: string } }
+// ) {
+//     try {
+//         const { id } = await context.params
 
-        const verification = await verifyAddressOwner(session.user.id, id);
-        if (verification.error) {
-            return NextResponse.json({ message: verification.error }, { status: verification.status });
-        }
-        const address = await prisma.address.findUnique({
-            where: { id },
-        });
+//         const session = await getServerSession(authOptions);
+//         if (!session?.user?.id) {
+//             return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
+//         }
 
-        return NextResponse.json(address, { status: 200 });
-    } catch (error) {
-        return errorHandler(error, `[ADDRESSES_GET_BY_ID]`);
-    }
-}
+//         const verification = await verifyAddressOwner(session.user.id, id);
+//         if (verification.error) {
+//             return NextResponse.json({ message: verification.error }, { status: verification.status });
+//         }
+//         const address = await prisma.address.findUnique({
+//             where: { id },
+//         });
+
+//         return NextResponse.json(address, { status: 200 });
+//     } catch (error) {
+//         return errorHandler(error, `[ADDRESSES_GET_BY_ID]`);
+//     }
+// }
 
 export async function PUT(
     request: NextRequest,
