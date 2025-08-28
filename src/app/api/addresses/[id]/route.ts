@@ -11,8 +11,12 @@ interface Params {
     id: string;
 }
 
-export async function GET(request: NextRequest, params: Params) {
+export async function GET(
+    request: NextRequest,
+    context: { params: { id: string } }
+) {
     try {
+        const { params } = await context
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ message: "Não autorizado" }, { status: 401 });

@@ -70,7 +70,7 @@ describe('/api/addresses/[id]', () => {
 
             const request = {} as NextRequest
 
-            const response = await GET(request, context.params);
+            const response = await GET(request, context);
             const body = await response.json();
 
             expect(response.status).toBe(200);
@@ -85,7 +85,7 @@ describe('/api/addresses/[id]', () => {
 
             const request = {} as NextRequest
 
-            const response = await GET(request, context.params);
+            const response = await GET(request, context);
 
             expect(response.status).toBe(401);
         });
@@ -101,7 +101,7 @@ describe('/api/addresses/[id]', () => {
             const context = { params: { id: 'addr-xyz' } };
             const request = {} as NextRequest
 
-            const response = await GET(request, context.params);
+            const response = await GET(request, context);
 
             expect(response.status).toBe(403);
         });
@@ -112,7 +112,7 @@ describe('/api/addresses/[id]', () => {
             const context = { params: { id: 'addr-inexistente' } };
             const request = {} as NextRequest
 
-            const response = await GET(request, context.params);
+            const response = await GET(request, context);
 
             expect(response.status).toBe(404);
         });
