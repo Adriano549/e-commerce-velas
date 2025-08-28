@@ -26,6 +26,9 @@ describe('/api/orders/[id]', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
+    const createMockContext = (id: string) => ({
+        params: Promise.resolve({ id })
+    });
 
     const adminSession: Session = {
         user: {
@@ -75,23 +78,23 @@ describe('/api/orders/[id]', () => {
         it('deve retornar o pedido se o utilizador for o dono', async () => {
             mockedGetServerSession.mockResolvedValue(userSession);
             mockedPrismaOrderFindUnique.mockResolvedValue(mockOrder);
-            const context = { params: { id: 'order-abc' } };
-            const response = await GET(context.params);
+            const request = {} as NextRequest;
+            const response = await GET(request, createMockContext('order-abc'));
             expect(response.status).toBe(200);
         });
 
         it('deve retornar 403 se o utilizador for outro', async () => {
             mockedGetServerSession.mockResolvedValue(userSession);
             mockedPrismaOrderFindUnique.mockResolvedValue(mockOtherUserOrder);
-            const context = { params: { id: 'order-xyz' } };
-            const response = await GET(context.params);
+            const request = {} as NextRequest;
+            const response = await GET(request, createMockContext('order-xyz'));
             expect(response.status).toBe(403);
         });
 
         it('deve retornar 401 se o utilizador nao estiver logado', async () => {
             mockedGetServerSession.mockResolvedValue(null);
-            const context = { params: { id: 'order-abc' } };
-            const response = await GET(context.params);
+            const request = {} as NextRequest;
+            const response = await GET(request, createMockContext('order-abc'));
             expect(response.status).toBe(401);
         });
     });
@@ -102,9 +105,8 @@ describe('/api/orders/[id]', () => {
             mockedPrismaOrderFindUnique.mockResolvedValue(mockOrder);
             mockedPrismaOrderUpdate.mockResolvedValue({ ...mockOrder, status: 'ENVIADO' });
             const request = new NextRequest('http://localhost/api/orders/order-abc', { method: 'PUT', body: JSON.stringify({ status: 'ENVIADO' }) });
-            const context = { params: { id: 'order-abc' } };
 
-            const response = await PUT(request, context);
+            const response = await PUT(request, createMockContext('order-abc'));
             expect(response.status).toBe(200);
             expect(mockedPrismaOrderUpdate).toHaveBeenCalledWith({
                 where: { id: 'order-abc' },
@@ -115,16 +117,14 @@ describe('/api/orders/[id]', () => {
         it('deve retornar 403 se o utilizador não for admin', async () => {
             mockedGetServerSession.mockResolvedValue(userSession);
             const request = new NextRequest('http://localhost/api/orders/order-abc', { method: 'PUT', body: '{}' });
-            const context = { params: { id: 'order-abc' } };
-            const response = await PUT(request, context);
+            const response = await PUT(request, createMockContext('order-abc'));
             expect(response.status).toBe(403);
         });
 
         it('deve retornar 401 se o utilizador nao estiver logado', async () => {
             mockedGetServerSession.mockResolvedValue(null);
             const request = new NextRequest('http://localhost/api/orders/order-abc', { method: 'PUT', body: '{}' });
-            const context = { params: { id: 'order-abc' } };
-            const response = await PUT(request, context);
+            const response = await PUT(request, createMockContext('order-abc'));
             expect(response.status).toBe(401);
         });
     });

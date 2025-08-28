@@ -1,5 +1,3 @@
-// src/app/api/orders/[id]/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -8,19 +6,22 @@ import { errorHandler } from "@/lib/erorrHandler";
 import { updateOrderSchema } from "@/lib/schemas/orderValidation";
 import { handleZodValidationError } from "@/lib/validationError";
 
-interface Params {
-    id: string;
+interface RouteContext {
+    params: Promise<{ id: string }>;
 }
-
-export async function GET(params: Params) {
+export async function GET(
+    request: NextRequest,
+    context: RouteContext
+) {
     try {
+        const { id } = await context.params;
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
         }
 
         const order = await prisma.order.findUnique({
-            where: { id: params.id },
+            where: { id },
             include: {
                 orderProducts: {
                     include: { product: true },
@@ -44,10 +45,10 @@ export async function GET(params: Params) {
 
 export async function PUT(
     request: NextRequest,
-    context: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
-        const params = await context.params;
+        const { id } = await context.params;
         const session = await getServerSession(authOptions);
 
         if (!session?.user?.id) {
@@ -57,7 +58,7 @@ export async function PUT(
             return NextResponse.json({ message: "Não autorizado" }, { status: 403 });
         }
 
-        const order = await prisma.order.findUnique({ where: { id: params.id } });
+        const order = await prisma.order.findUnique({ where: { id } });
         if (!order) {
             return NextResponse.json({ message: "Pedido não encontrado" }, { status: 404 });
         }
@@ -69,7 +70,7 @@ export async function PUT(
         }
 
         const updatedOrder = await prisma.order.update({
-            where: { id: params.id },
+            where: { id },
             data: {
                 status: validation.data.status,
             },
