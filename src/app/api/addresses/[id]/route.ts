@@ -9,38 +9,38 @@ import { handleZodValidationError } from "@/lib/validationError";
 
 
 
-// export async function GET(
-//     request: NextRequest,
-//     context: { params: { id: string } }
-// ) {
-//     try {
-//         const { id } = await context.params
+export async function GET(
+    request: NextRequest,
+    context: { params: { id: string } }
+) {
+    try {
+        const { id } = context.params
 
-//         const session = await getServerSession(authOptions);
-//         if (!session?.user?.id) {
-//             return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
-//         }
+        const session = await getServerSession(authOptions);
+        if (!session?.user?.id) {
+            return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
+        }
 
-//         const verification = await verifyAddressOwner(session.user.id, id);
-//         if (verification.error) {
-//             return NextResponse.json({ message: verification.error }, { status: verification.status });
-//         }
-//         const address = await prisma.address.findUnique({
-//             where: { id },
-//         });
+        const verification = await verifyAddressOwner(session.user.id, id);
+        if (verification.error) {
+            return NextResponse.json({ message: verification.error }, { status: verification.status });
+        }
+        const address = await prisma.address.findUnique({
+            where: { id },
+        });
 
-//         return NextResponse.json(address, { status: 200 });
-//     } catch (error) {
-//         return errorHandler(error, `[ADDRESSES_GET_BY_ID]`);
-//     }
-// }
+        return NextResponse.json(address, { status: 200 });
+    } catch (error) {
+        return errorHandler(error, `[ADDRESSES_GET_BY_ID]`);
+    }
+}
 
 export async function PUT(
     request: NextRequest,
     context: { params: { id: string } }
 ) {
     try {
-        const { id } = await context.params
+        const { id } = context.params
         const session = await getServerSession(authOptions);
         if (!session?.user?.id) {
             return NextResponse.json({ message: "Não autorizado" }, { status: 401 });
