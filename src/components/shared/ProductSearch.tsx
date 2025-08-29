@@ -5,14 +5,13 @@ import { Search } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// Adicionamos uma prop opcional 'basePath'
 interface ProductSearchProps {
     basePath?: string;
 }
 
 export default function ProductSearch({ basePath }: ProductSearchProps) {
     const router = useRouter();
-    const pathname = usePathname(); // Hook para obter o caminho atual
+    const pathname = usePathname();
     const searchParams = useSearchParams();
     const currentSearch = searchParams.get('q') || '';
 
@@ -29,7 +28,6 @@ export default function ProductSearch({ basePath }: ProductSearchProps) {
                 } else {
                     params.delete('q');
                 }
-                // Reset para a primeira página ao fazer uma nova busca
                 params.delete('page');
 
                 router.push(`${targetPath}?${params.toString()}`);

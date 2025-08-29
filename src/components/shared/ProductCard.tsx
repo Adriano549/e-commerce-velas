@@ -2,11 +2,11 @@
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import Link from "next/link";
 import { ProductFromDb } from "@/types/cardItem";
 import AddToCartButton from "./AddToCartButton";
 import PlaceholderImage from '@/assets/placeholder-image.png';
+import ProductImage from "./ProductImage";
 
 interface ProductCardProps {
     product: ProductFromDb;
@@ -22,7 +22,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <Card className="flex flex-col">
             <CardHeader>
                 <div className="relative h-60 w-full overflow-hidden rounded-md">
-                    <Image
+                    <ProductImage
                         src={product.image || PlaceholderImage}
                         alt={product.name}
                         fill

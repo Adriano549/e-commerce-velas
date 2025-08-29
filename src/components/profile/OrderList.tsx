@@ -1,14 +1,12 @@
-// src/components/profile/OrderList.tsx
-
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { DetailedOrder } from "@/types/cardItem"; // Importamos nosso novo tipo
-import Image from "next/image";
+import { DetailedOrder } from "@/types/cardItem";
 import { Separator } from "@/components/ui/separator";
+import ProductImage from "../shared/ProductImage";
 
 interface OrderListProps {
     orders: DetailedOrder[];
@@ -40,7 +38,12 @@ export default function OrderList({ orders }: OrderListProps) {
                             {order.orderProducts.map(item => (
                                 <div key={item.id} className="flex items-center gap-4">
                                     <div className="relative h-16 w-16 flex-shrink-0">
-                                        <Image src={item.product.image} alt={item.product.name} fill className="rounded-md object-cover" />
+                                        <ProductImage
+                                            src={item.product.image}
+                                            alt={item.product.name}
+                                            fill
+                                            className="rounded-md object-cover"
+                                        />
                                     </div>
                                     <div className="flex-grow">
                                         <p className="font-medium">{item.product.name}</p>

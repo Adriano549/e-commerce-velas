@@ -1,8 +1,7 @@
 import { getProductById } from "@/services/productService";
 import { notFound } from 'next/navigation';
-import Image from "next/image";
 import AddToCartForm from "@/components/shared/AddToCartForm";
-import PlaceholderImage from '@/assets/placeholder-image.png';
+import ProductImage from "@/components/shared/ProductImage";
 
 interface ProductDetailsPageProps {
     params: Promise<{ id: string }>;
@@ -25,12 +24,8 @@ export default async function ProductDetailsPage({ params }: ProductDetailsPageP
         <main className="container mx-auto px-4 py-12">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                 <div className="relative aspect-square w-full">
-                    <Image
-                        src={product.image || PlaceholderImage.src}
-                        onError={(e) => {
-                            (e.target as HTMLImageElement).src = PlaceholderImage.src;
-                            (e.target as HTMLImageElement).onerror = null;
-                        }}
+                    <ProductImage
+                        src={product.image}
                         alt={product.name}
                         fill
                         className="rounded-lg object-cover"

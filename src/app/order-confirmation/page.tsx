@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
-import Image from 'next/image';
+import ProductImage from '@/components/shared/ProductImage';
 
 interface OrderConfirmationPageProps {
     searchParams: Promise<{
@@ -65,7 +65,12 @@ export default async function OrderConfirmationPage({ searchParams }: OrderConfi
                     {order.orderProducts.map(item => (
                         <div key={item.id} className="flex items-center gap-4">
                             <div className="relative h-16 w-16 flex-shrink-0">
-                                <Image src={item.product.image} alt={item.product.name} fill className="rounded-md object-cover" />
+                                <ProductImage
+                                    src={item.product.image}
+                                    alt={item.product.name}
+                                    fill
+                                    className="rounded-md object-cover"
+                                />
                             </div>
                             <div className="flex-grow">
                                 <p className="font-medium">{item.product.name}</p>

@@ -1,4 +1,3 @@
-// src/components/checkout/CheckoutClient.tsx
 'use client';
 
 import { useEffect, useMemo, useState } from "react";
@@ -7,11 +6,11 @@ import { useCartStore } from "@/store/cartStore";
 import { AddressFromDb, ProductFromDb } from "@/types/cardItem";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
+import ProductImage from "../shared/ProductImage";
 
 
 
@@ -115,14 +114,18 @@ export default function CheckoutClient({ addresses }: CheckoutClientProps) {
                         <p className="text-muted-foreground">Você ainda não tem endereços guardados. <Link href="/profile" className="underline">Adicione um no seu perfil.</Link></p>
                     )}
                 </div>
-
-                {/* Revisão dos Itens */}
                 <div>
                     <h2 className="text-2xl font-bold mb-4">Revisar Itens</h2>
                     <div className="space-y-4">
                         {detailedItems.map(item => (
                             <div key={item.product.id} className="flex items-center gap-4">
-                                <Image src={item.product.image} alt={item.product.name} width={64} height={64} className="rounded-md object-cover" />
+                                <ProductImage
+                                    src={item.product.image}
+                                    alt={item.product.name}
+                                    width={64}
+                                    height={64}
+                                    className="rounded-md object-cover"
+                                />
                                 <div className="flex-grow">
                                     <p>{item.product.name}</p>
                                     <p className="text-sm text-muted-foreground">Qtd: {item.quantity}</p>

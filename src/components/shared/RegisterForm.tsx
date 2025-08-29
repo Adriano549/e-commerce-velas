@@ -39,27 +39,22 @@ export default function RegisterForm() {
             const data = await response.json();
 
             if (!response.ok) {
-                // Se a API retornou um erro (status 4xx ou 5xx)
-                // Lemos os erros de validação do Zod que o back-end nos enviou
                 if (data.errors) {
                     const errorMessages = Object.values(data.errors).join(' \n');
                     setError(errorMessages);
                 } else {
-                    // Para outros erros da API
                     setError(data.message || 'Ocorreu um erro ao criar a conta.');
                 }
                 setIsLoading(false);
-                return; // Interrompe a execução aqui
+                return;
             }
 
-            // Se a resposta for OK (status 2xx)
             setSuccess('Conta criada com sucesso! Será redirecionado para a página de login em 3 segundos...');
             setTimeout(() => {
                 router.push('/login');
             }, 3000);
 
         } catch (error) {
-            // Este catch agora pega principalmente erros de rede (ex: servidor offline)
             setIsLoading(false);
             setError('Falha na comunicação com o servidor. Tente novamente.');
             console.error("Erro inesperado no handleSubmit:", error);
@@ -73,7 +68,6 @@ export default function RegisterForm() {
                 <CardDescription>Crie uma nova conta para começar a comprar.</CardDescription>
             </CardHeader>
             <CardContent>
-                {/* O seu JSX para o formulário continua exatamente o mesmo aqui */}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="name">Nome</Label>
